@@ -15,7 +15,12 @@
     self = [super initWithFrame:frame isPreview:isPreview];
     if (self) {
         [self setAnimationTimeInterval:1];
-        url = @"http://www.spy.net/";
+
+    	ScreenSaverDefaults *defaults = [ScreenSaverDefaults defaultsForModuleWithName:@"net.spy.WebSaver"];
+        [defaults registerDefaults:[NSDictionary dictionaryWithObjectsAndKeys:
+            @"http://bleu.west.spy.net/~dustin/", @"url", nil]];
+
+        url = [defaults valueForKey: @"url"];
         webview = [[WebView alloc] initWithFrame:frame frameName:@"main" groupName:@"main"];
         [self addSubview:webview];
     }
@@ -45,12 +50,44 @@
 
 - (BOOL)hasConfigureSheet
 {
-    return NO;
+    return YES;
 }
 
+// Display the configuration sheet for the user to choose their settings
 - (NSWindow*)configureSheet
 {
-    return nil;
+	// if we haven't loaded our configure sheet, load the nib named MyScreenSaver.nib
+	if (!configSheet) {
+		[NSBundle loadNibNamed:@"WebSaver" owner:self];
+    }
+
+    [urlField setStringValue:url];
+
+	return configSheet;
+}
+
+// Called when the user clicked the SAVE button
+- (IBAction) closeSheetSave:(id) sender
+{
+    // get the defaults
+	ScreenSaverDefaults *defaults = [ScreenSaverDefaults defaultsForModuleWithName:@"net.spy.WebSaver"];
+	
+	// write the defaults
+    url = [urlField stringValue];
+	[defaults setValue:url forKey:@"url"];
+	
+	// synchronize
+    [defaults synchronize];
+
+	// end the sheet
+    [NSApp endSheet:configSheet];
+}
+
+// Called when th user clicked the CANCEL button
+- (IBAction) closeSheetCancel:(id) sender
+{
+	// nothing to configure
+    [NSApp endSheet:configSheet];
 }
 
 @end

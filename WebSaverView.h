@@ -12,9 +12,13 @@
 @interface WebSaverView : ScreenSaverView 
 {
     IBOutlet id configSheet;
+    IBOutlet NSTextField *urlField;
 
     NSString *url;
     WebView *webview;
 }
+
+- (IBAction) closeSheetSave:(id) sender;
+- (IBAction) closeSheetCancel:(id) sender;
 
 @end
