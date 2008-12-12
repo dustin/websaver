@@ -13,11 +13,15 @@
 {
     IBOutlet id configSheet;
     IBOutlet NSTextField *urlField;
+    IBOutlet NSSlider *refreshSlider;
+    IBOutlet NSTextField *refreshLabel;
 
     NSString *url;
+    int refresh;
     WebView *webview;
 }
 
+- (IBAction) changedRefresh:(id) sender;
 - (IBAction) closeSheetSave:(id) sender;
 - (IBAction) closeSheetCancel:(id) sender;
 

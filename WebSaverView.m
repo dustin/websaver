@@ -14,15 +14,24 @@
 {
     self = [super initWithFrame:frame isPreview:isPreview];
     if (self) {
-        [self setAnimationTimeInterval:1];
-
     	ScreenSaverDefaults *defaults = [ScreenSaverDefaults defaultsForModuleWithName:@"net.spy.WebSaver"];
         [defaults registerDefaults:[NSDictionary dictionaryWithObjectsAndKeys:
-            @"http://bleu.west.spy.net/~dustin/", @"url", nil]];
+            @"http://bleu.west.spy.net/~dustin/", @"url",
+            [NSNumber numberWithInt: 0], @"refresh",
+            nil]];
 
         url = [defaults valueForKey: @"url"];
+        refresh = [defaults integerForKey: @"refresh"];
         webview = [[WebView alloc] initWithFrame:frame frameName:@"main" groupName:@"main"];
         [self addSubview:webview];
+
+        NSLog(@"Setting animation interval to %d", refresh);
+        if(refresh > 0) {
+            [self setAnimationTimeInterval: refresh];
+        } else {
+            // Arbitrarily large magic number.
+            [self setAnimationTimeInterval: (2 << 24)];
+        }
     }
     return self;
 }
@@ -45,7 +54,7 @@
 
 - (void)animateOneFrame
 {
-    return;
+    [webview reload:self];
 }
 
 - (BOOL)hasConfigureSheet
@@ -62,6 +71,8 @@
     }
 
     [urlField setStringValue:url];
+    [refreshSlider setIntValue:refresh];
+    [self changedRefresh: refreshSlider];
 
 	return configSheet;
 }
@@ -75,6 +86,7 @@
 	// write the defaults
     url = [urlField stringValue];
 	[defaults setValue:url forKey:@"url"];
+    [defaults setInteger:[refreshSlider intValue] forKey:@"refresh"];
 	
 	// synchronize
     [defaults synchronize];
@@ -88,6 +100,16 @@
 {
 	// nothing to configure
     [NSApp endSheet:configSheet];
+}
+
+- (IBAction) changedRefresh:(id) sender
+{
+    refresh = [refreshSlider intValue];
+    if(refresh == 0) {
+        [refreshLabel setStringValue: @"Never"];
+    } else {
+        [refreshLabel setStringValue: [NSString stringWithFormat:@"%d s", refresh]];
+    }
 }
 
 @end
