@@ -12,6 +12,11 @@
 
 - (id)initWithFrame:(NSRect)frame isPreview:(BOOL)isPreview
 {
+    NSLog(@"initting with %dx%d at %d,%d (preview: %d)",
+        (int)frame.size.width, (int)frame.size.height,
+        (int)frame.origin.x, (int)frame.origin.y, isPreview);
+    frame.origin.y=0;
+    frame.origin.x=0;
     self = [super initWithFrame:frame isPreview:isPreview];
     if (self) {
     	ScreenSaverDefaults *defaults = [ScreenSaverDefaults defaultsForModuleWithName:@"net.spy.WebSaver"];
