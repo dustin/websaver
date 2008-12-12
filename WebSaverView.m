@@ -15,8 +15,6 @@
     NSLog(@"initting with %dx%d at %d,%d (preview: %d)",
         (int)frame.size.width, (int)frame.size.height,
         (int)frame.origin.x, (int)frame.origin.y, isPreview);
-    frame.origin.y=0;
-    frame.origin.x=0;
     self = [super initWithFrame:frame isPreview:isPreview];
     if (self) {
     	ScreenSaverDefaults *defaults = [ScreenSaverDefaults defaultsForModuleWithName:@"net.spy.WebSaver"];
@@ -27,7 +25,7 @@
 
         url = [defaults valueForKey: @"url"];
         refresh = [defaults integerForKey: @"refresh"];
-        webview = [[WebView alloc] initWithFrame:frame frameName:@"main" groupName:@"main"];
+        webview = [[WebView alloc] initWithFrame:[self bounds] frameName:@"main" groupName:@"main"];
         [self addSubview:webview];
 
         NSLog(@"Setting animation interval to %d", refresh);
